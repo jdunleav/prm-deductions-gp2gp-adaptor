@@ -1,9 +1,16 @@
-import httpContext from 'express-http-context';
-import uuid from 'uuid/v4';
+import httpContext from 'async-local-storage';
+import axios from 'axios';
+import { v4 as uuid } from 'uuid';
 
-export const getCorrelationId = () => httpContext.get('correlationId');
+const CORRELATION_ID_HEADER = 'X-Correlation-ID';
+const CORRELATION_ID_KEY = 'correlationId';
 
-export const addCorrelationInfo = (req, res, next) => {
-  httpContext.set('correlationId', uuid());
+export const getCorrelationId = () => httpContext.get(CORRELATION_ID_KEY);
+export const setCorrelationInfo = (correlationId = uuid()) =>
+  httpContext.set(CORRELATION_ID_KEY, correlationId);
+
+export const middleware = (req, res, next) => {
+  setCorrelationInfo(req.get(CORRELATION_ID_HEADER));
+  axios.defaults.headers.common[CORRELATION_ID_HEADER] = getCorrelationId();
   next();
 };

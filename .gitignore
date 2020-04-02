@@ -1,6 +1,9 @@
 # IntelliJ
 .idea
 
+# Locally generated files
+outdated-dependencies.txt
+
 # Directory for storing files when running locally
 local-datastore
 
@@ -114,3 +117,6 @@ dist
 
 # Local .terraform directories
 **/.terraform/*
+/terraform/nhs_deployment.tfplan
+/terraform/tf-out.json
+*.dojo

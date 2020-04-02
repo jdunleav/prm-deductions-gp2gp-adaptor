@@ -1,13 +1,39 @@
-export const generateEhrRequestQuery = (
+const checkTemplateArguments = require('./utils/check_params');
+
+const generateEhrRequestQuery = ({ id, timestamp, receivingService, sendingService, patient }) => {
+  const inputObject = {
+    id,
+    timestamp,
+    receivingService: {
+      asid: undefined,
+      odsCode: undefined,
+      ...(receivingService || {})
+    },
+    sendingService: {
+      asid: undefined,
+      odsCode: undefined,
+      ...(sendingService || {})
+    },
+    patient: {
+      nhsNumber: undefined,
+      ...(patient || {})
+    }
+  };
+
+  checkTemplateArguments(inputObject);
+  return template(inputObject);
+};
+
+const template = ({
   id,
   timestamp,
-  receivingAsid,
-  sendingAsid,
-  receivingOdsCode,
-  sendingOdsCode,
-  nhsNumber
-) =>
-  `<RCMR_IN010000UK05 xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:hl7-org:v3 RCMR_IN010000UK05.xsd">
+  receivingService: { asid: receivingAsid, odsCode: receivingOdsCode },
+  sendingService: { asid: sendingAsid, odsCode: sendingOdsCode },
+  patient: { nhsNumber }
+}) =>
+  `<RCMR_IN010000UK05 xmlns="urn:hl7-org:v3" 
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xsi:schemaLocation="urn:hl7-org:v3 RCMR_IN010000UK05.xsd">
     <id root="${id}" />
     <creationTime value="${timestamp}" />
     <versionCode code="V3NPfIT3.1.10"/>
@@ -59,3 +85,5 @@ export const generateEhrRequestQuery = (
         </subject>
     </ControlActEvent>
   </RCMR_IN010000UK05>`;
+
+module.exports = generateEhrRequestQuery;

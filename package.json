@@ -1,43 +1,69 @@
 {
   "name": "prm-deductions-gp2gp-adaptor",
   "version": "1.0.0",
-  "description": "",
+  "description": "GP2GP Adapter Service for making and receiving Health Records using GP2GP",
   "main": "src/server.js",
   "scripts": {
     "lint": "eslint src/ --fix",
-    "unit": "jest",
-    "test": "npm run lint && npm run unit",
-    "build": "babel src -d build --ignore '**/*.test.js' && cp src/*.json build",
+    "test": "npm run lint && npm run test:unit",
+    "test:unit": "jest \"src/(?!(.*\\integration.test\\.js))\" --setupFiles dotenv/config",
+    "test:integration": "jest \"src/.*\\integration.test\\.js\" --detectOpenHandles --forceExit --setupFiles dotenv/config",
+    "test:functional": "jest test/functional/*",
+    "test:docker": "jest test/docker/*",
+    "test:watch": "jest \"src/(?!(.*\\integration.test\\.js))\" --setupFiles dotenv/config --watch",
+    "test:coverage": "jest src/ --maxWorkers=1 --coverage --detectOpenHandles --forceExit --setupFiles dotenv/config",
+    "build": "babel src -d build --ignore '**/*.test.js' --ignore '**/__mocks__/*' --ignore '**/__tests__/*' && cp src/*.json build",
     "start": "node build/server.js",
-    "start-local": "babel-node -r node_modules/dotenv/config src/server.js"
+    "start:local": "babel-node -r dotenv/config src/server.js",
+    "start:nodemon": "nodemon --exec babel-node -r dotenv/config src/server.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nhsconnect/prm-deductions-gp2gp-adaptor.git"
   },
   "dependencies": {
+    "@babel/runtime": "^7.9.2",
+    "async-local-storage": "^2.3.1",
+    "aws-sdk": "^2.649.0",
+    "axios": "^0.19.2",
+    "dateformat": "^3.0.3",
+    "dayjs": "^1.8.23",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "express-http-context": "^1.2.3",
-    "express-validator": "^6.3.0",
-    "express-winston": "^4.0.1",
-    "moment": "^2.24.0",
-    "swagger-ui-express": "^4.1.2",
-    "uuid": "^3.3.3",
-    "winston": "^3.2.1"
+    "express-validator": "^6.4.0",
+    "express-winston": "^4.0.3",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.merge": "^4.6.2",
+    "stompit": "^1.0.0",
+    "swagger-ui-express": "^4.1.4",
+    "traverse": "^0.6.6",
+    "uuid": "^7.0.2",
+    "winston": "^3.2.1",
+    "xml2js": "^0.4.23",
+    "xmlserializer": "^0.6.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.7.0",
-    "@babel/core": "^7.6.4",
-    "@babel/node": "^7.6.3",
-    "@babel/preset-env": "^7.6.3",
-    "eslint": "^6.6.0",
-    "eslint-config-prettier": "^6.7.0",
-    "eslint-plugin-jest": "^23.0.4",
-    "eslint-plugin-prettier": "^3.1.1",
-    "jest": "^24.9.0",
-    "jest-when": "^2.7.0",
-    "prettier": "^1.19.1",
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
+    "@babel/node": "^7.8.7",
+    "@babel/plugin-transform-runtime": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-jest": "^23.8.2",
+    "eslint-plugin-prettier": "^3.1.2",
+    "jest": "^25.2.4",
+    "jest-when": "^2.7.1",
+    "nodemon": "^2.0.2",
+    "prettier": "^2.0.2",
     "supertest": "^4.0.2"
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      ".*/__tests__/data/.*"
+    ],
+    "resetModules": true,
+    "clearMocks": true,
+    "automock": false
   }
 }
